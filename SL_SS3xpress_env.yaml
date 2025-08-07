@@ -1,0 +1,21 @@
+name: SL_SS3xpress_env
+channels:
+   - conda-forge
+   - bioconda
+
+dependencies:
+   - python=3.10
+   - star=2.7.10a
+   - biopython
+   - bioconda::seqtk
+   - bioconda::cutadapt=4.3
+   - bioconda::samtools
+   - conda-forge::pandas
+   - conda-forge::numpy
+#   - bioconda::rsem
+#   - bioconda::salmon
+#   - bioconda::seqkit
+#   - bioconda::bbmap
+#   - bioconda::perl-bioperl
+#   - bioconda::deeptools
+#   - bioconda::trinity
