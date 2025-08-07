@@ -1,0 +1,33 @@
+# Ignore everything by default
+/*
+
+# Allow directories (so we can include specific files inside them)
+!*/
+
+# Keep specific files
+!.gitignore
+!run.sh
+!*.ipynb
+
+# Ignore swap and checkpoint files
+.ipynb_checkpoints/
+*/*.swp
+
+# Include everything in the bin folder
+!bin/**
+# Ignore bin checkpoints
+bin/.ipynb_checkpoints/
+
+# Ignore everything in input by default
+input/**
+
+# Un-ignore the input folder itself
+!/input/
+
+# Include only specific files in input folder
+!/input/N*indexes.fasta
+!/input/TAGs.fasta
+
+# Ignore everything in output/
+output/**
+
