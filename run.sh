@@ -11,10 +11,6 @@
 # This module aims to generate count matrices for single-cell sequencing data obtained with SL-SS3xpress pipeline. From downloading the data to generating plots.
  
 
-
-
-# This module aims to generate count matrices for single-cell sequencing data obtained with SS3x pipeline, from a 384-well plate where we put single-cells from a mixed population (mixed after the first TDB wash) of P10 and N50 cells, and as controls some columns with only P10 cells and some columns with only N50 cells. We also put 0.3X Spike-in(~1364 transcripts) only in the upper half of the plate. Through out the plate we used the same RT primer conc. 1/16X (relative to the recommended concentration for mammal cells in SS3x) and the same TDE1 conc. 0.1X (relative to the recommended concentration for mammal cells in SS3x). We used as water controls (no cell sorted) the following wells: C3, E11, A16, D24, G2, O12, M8, P1, J14, F22, K15, L1, N4, O19, H10 (all this info is in an associated table that is used as input). Here we want to assess the level of index hopping and RNA contamination by measuring VSG expression, P10 cells should express Tb427VSG-2, while N50 cells should express only Tb427VSG-13
-
 #to run ./run.sh
 #
 ###Requirements##
@@ -34,7 +30,7 @@ main(){
 
 	build_metadata
 
-##	make_barcodes_only_list
+#	make_barcodes_only_list
 
 ##	link_genomes
 
@@ -77,8 +73,8 @@ set_variables(){
 	I5_READS_FILE=example_i5.fastq.gz
 	I7_I5_TAG_UMI_READS_FILE=i7_i5_tag_UMI_R2.fastq.gz
 	BC_FILE=BCs.txt
-	TAG_FASTA_FILE=${METADATA_FILE%.txt}_used_TAGs.fasta
-	TAG_FASTA_FILE=SS3x_example_TAGs_list.fasta
+	TAG_FASTA_FILE=${METADATA_FILE%desc.txt}used_TAGs.fasta
+#	TAG_FASTA_FILE=SS3x_example_TAGs_list.fasta
 	SL_ERCC_GENOME_FOLDER=${OUTPUT_FOLDER}/SL_ERCC_genome
 	STAR_INDEX_FOLDER=${OUTPUT_FOLDER}/star_index
 	STAR_MAPPING_FOLDER=${OUTPUT_FOLDER}/star_mapping
@@ -114,30 +110,25 @@ wget -O ${INPUT_READS_FOLDER}/${I5_READS_FILE} ftp://ftp.sra.ebi.ac.uk/vol1/run/
 build_metadata(){
 
 
-#python SL_SS3x_metadata_table_generation.py --config config_file.txt --index_dir . --tags TAGs.fasta --assignments assignments.tsv --output test_v2.txt
-
-#python ${SCRIPTS_FOLDER}/SL_SS3x_metadata_table_generation_v6.py \
-python ${SCRIPTS_FOLDER}/SL_SS3x_metadata_table_generation_FIXED.py \
+python ${SCRIPTS_FOLDER}/SL_SS3x_metadata_table_generation.py \
 	--config ${INPUT_FOLDER}/${CONFIG_FILE} \
-	--index_dir ${INPUT_FOLDER} \
-	--tags ${INPUT_FOLDER}/${ALL_TAGS_FASTA} \
 	--assignments ${INPUT_FOLDER}/${ASSIGNMENTS_FILE} \
-	--output ${INPUT_FOLDER}/${METADATA_FILE}
+	--tag_fasta ${INPUT_FOLDER}/${ALL_TAGS_FASTA} \
+	--output ${INPUT_FOLDER}/${METADATA_FILE} \
+	--tag_output ${INPUT_FOLDER}/${TAG_FASTA_FILE} \
+	--index_sets_folder ${INPUT_FOLDER}
+
+
 
 }
 
-## Am i cutting the barcode only list from the table or should i have it already?
-## which columns should be in the BC_ASSOCIATION_FILE? I should call them by name in the scripts, so that they work independently of the position they are in the table.
 
 make_barcodes_only_list(){
 
-${INPUT_FOLDER}/${METADATA_FILE}
+col="BC_TAG"; 
 
-cut -f 36 $INPUT_FOLDER/$BC_ASSOCIATION_FILE | sed '1d' > $OUTPUT_FOLDER/$BC_FILE
+awk -F'\t' -v colname="$col" 'NR==1 {for (i=1; i<=NF; i++) if ($i == colname) col=i; next} {print $col}' ${INPUT_FOLDER}/${METADATA_FILE} > $OUTPUT_FOLDER/${BC_FILE}
 
-
-#jid0=$(sbatch --job-name=BClist --wrap="cut -f 36 $INPUT_FOLDER/$BC_ASSOCIATION_FILE | sed '1d' > $OUTPUT_FOLDER/$BC_FILE")
-#jid0=$(echo $jid0 | sed "s/Submitted batch job //")
 
 }
 
@@ -180,7 +171,7 @@ make_fastq_random_subsamples(){
 
 for SUBSAMPLE in 100000
 do
-        # to get an average of this amounts of reads per cell, considering 369 cells we need to subsample so many reads:
+        # to get an average of this amounts of reads per cell, considering that there are 369 cells(15 wells are no-cell controls ), we need to subsample so many reads:
         let "SUBSAMPLED_READS=$SUBSAMPLE * 369"
         SUBSAMPLE_FOLDER=${OUTPUT_FOLDER}/SS3x_example_${SUBSAMPLE%000}K_reads_subsample
         mkdir -p ${SUBSAMPLE_FOLDER}
@@ -255,7 +246,7 @@ do
 
 	STAR --runThreadN 16 --genomeDir ${STAR_INDEX_FOLDER} \
 		--readFilesIn ${SUBSAMPLE_FOLDER}/${READS_FILE%_R1.fastq.gz}_filtered_${SUBSAMPLE%000}K_R1.fastq.gz ${SUBSAMPLE_FOLDER}/${I7_I5_TAG_UMI_READS_FILE%_R2.fastq.gz}_filtered_${SUBSAMPLE%000}K_R2.fastq.gz \
-		--readFilesCommand zcat --soloType CB_UMI_Simple --soloCBwhitelist ${INPUT_FOLDER}/${BC_FILE} \
+		--readFilesCommand zcat --soloType CB_UMI_Simple --soloCBwhitelist ${OUTPUT_FOLDER}/${BC_FILE} \
 		--soloCBstart 1 --soloCBlen 27 --soloUMIstart 28 --soloUMIlen 8 \
 		--sjdbGTFfile ${SL_ERCC_GENOME_FOLDER}/${HYBRID_MRNA_GFF} \
 		--outFileNamePrefix ${STAR_MAPPING_FOLDER}/${OUTPUT_PREFIX} \
