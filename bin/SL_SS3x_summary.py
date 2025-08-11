@@ -130,8 +130,10 @@ def SL_SS3x_summary_table_hf(SS3x_sheet_path,matrix_dir,neg_matrix_path):
     matrix_summary.loc['ERCC_Total'] = matrix_ERCC.sum()
     
     matrix_summary_tp = matrix_summary.transpose()
-    
-    Gene_counts = pd.concat([matrix_summary_tp,bc_wells_df.loc[:,["Plate","Type","Sorting","Library_ID"]]],axis=1)
+
+    # Select columns to exclude from bc_wells_df to go on the output dataframe:
+    exclude_cols= ["Well","i7","i7_rc","i5","i5_rc","BC","TAG","BC_TAG","i7_name","i5_name"]
+    Gene_counts = pd.concat([matrix_summary_tp,bc_wells_df.drop(columns=exclude_cols,errors="ignore")],axis=1)
  
     return Gene_counts
 
@@ -200,9 +202,11 @@ def SL_SS3x_summary_table(SS3x_sheet_path,matrix_dir):
     matrix_summary.loc['ERCC_Total'] = matrix_ERCC.sum()
     
     matrix_summary_tp = matrix_summary.transpose()
-    
-    Gene_counts = pd.concat([matrix_summary_tp,bc_wells_df.loc[:,["Plate","Type","Sorting","Library_ID"]]],axis=1)
- 
+
+    # Select columns to exclude from bc_wells_df to go on the output dataframe:
+    exclude_cols= ["Well","i7","i7_rc","i5","i5_rc","BC","TAG","BC_TAG","i7_name","i5_name"]
+    Gene_counts = pd.concat([matrix_summary_tp,bc_wells_df.drop(columns=exclude_cols,errors="ignore")],axis=1)
+
     return Gene_counts
 
 def SL_SS3x_matrix(SS3x_sheet_path,matrix_dir):

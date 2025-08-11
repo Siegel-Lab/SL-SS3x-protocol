@@ -29,6 +29,8 @@ input/**
 # Include only specific files in input folder
 !/input/N*indexes.fasta
 !/input/TAGs.fasta
+!/input/genome_and_annotation/
+!/input/genome_and_annotation/*
 
 # Ignore everything in output/
 output/**

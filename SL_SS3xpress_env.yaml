@@ -12,10 +12,9 @@ dependencies:
    - bioconda::samtools
    - conda-forge::pandas
    - conda-forge::numpy
-#   - bioconda::rsem
-#   - bioconda::salmon
-#   - bioconda::seqkit
-#   - bioconda::bbmap
-#   - bioconda::perl-bioperl
-#   - bioconda::deeptools
-#   - bioconda::trinity
+   - conda-forge::jupyterlab
+   - conda-forge::scipy
+   - conda-forge::scanpy
+   - conda-forge::seaborn
+   - conda-forge::openpyxl
+
