@@ -16,8 +16,9 @@
 
 # Include everything in the bin folder
 !bin/**
-# Ignore bin checkpoints
+# Ignore bin checkpoints and pycache
 bin/.ipynb_checkpoints/
+bin/__pycache__/
 
 # Ignore everything in input by default
 input/**
