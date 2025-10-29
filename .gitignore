@@ -32,6 +32,7 @@ input/**
 !/input/genome_and_annotation/
 !/input/genome_and_annotation/*
 !/input/*config_file.txt
+!/input/*assignments.tsv
 # Ignore everything in output/
 output/**
 
