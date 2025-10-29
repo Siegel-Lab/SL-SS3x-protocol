@@ -31,7 +31,7 @@ input/**
 !/input/TAGs.fasta
 !/input/genome_and_annotation/
 !/input/genome_and_annotation/*
-
+!/input/*config_file.txt
 # Ignore everything in output/
 output/**
 
